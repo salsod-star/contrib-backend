@@ -1,0 +1,9 @@
+import bcrypt from "bcryptjs";
+
+const getHashedPassword = (password: string): string => {
+  const hashedPassword = bcrypt.hashSync(password, 12);
+
+  return hashedPassword;
+};
+
+export default getHashedPassword;
