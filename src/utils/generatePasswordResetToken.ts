@@ -3,7 +3,7 @@ import crypto from "crypto";
 type generatePasswordResetTokenProps = {
   token: string;
   hashedToken: string;
-  tokenExpiresAt: number;
+  tokenExpiresAt: Date;
 };
 
 export const generatePasswordResetToken =
@@ -12,7 +12,7 @@ export const generatePasswordResetToken =
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    const tokenExpiresAt = Date.now() + 20 * 60 * 1000;
+    const tokenExpiresAt = new Date(Date.now() + 20 * 60 * 1000);
 
     return { token, hashedToken, tokenExpiresAt };
   };

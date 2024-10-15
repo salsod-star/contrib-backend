@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm";
 import { User } from "../models/user";
+import { Organization } from "../models/organization";
+import { OrganizationSetting } from "../models/organizationSettings";
+import { Contribution } from "../models/contribution";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -9,8 +12,7 @@ export const AppDataSource = new DataSource({
   password: "salsod",
   database: "contrib",
   synchronize: true,
-  // logging: true,
-  entities: [User],
+  entities: [User, Organization, OrganizationSetting, Contribution],
   subscribers: [],
   migrations: [],
 });

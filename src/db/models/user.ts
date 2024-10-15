@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Organization } from "./organization";
+import { Contribution } from "./contribution";
 
 enum UserRole {
   SUPER_ADMIN = "superAdmin",
@@ -13,24 +21,29 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({
-    length: 15,
-  })
+  @Column({ length: 15 })
   firstName!: string;
 
-  @Column({
-    length: 15,
-  })
+  @Column({ length: 15 })
   lastName!: string;
 
-  @Column({
-    length: 12,
-    unique: true,
-  })
+  @Column({ length: 12, unique: true })
   username!: string;
 
   @Column({ unique: true })
   email!: string;
+
+  @Column({ nullable: true })
+  defaultOrganizationId!: string;
+
+  @Column({ nullable: true })
+  ownerOrganizationId!: string;
+
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  organization!: Organization;
+
+  @OneToMany(() => Contribution, (contribution) => contribution.user)
+  contributions!: Contribution[];
 
   @Column()
   password!: string;
@@ -38,8 +51,8 @@ export class User {
   @Column({ default: null })
   passwordResetToken!: string;
 
-  @Column({ type: "number", default: null })
-  passwordResetTokenExpires!: number;
+  @Column({ type: "timestamp", default: null, nullable: true })
+  passwordResetTokenExpires!: Date | null;
 
   @Column({ type: "timestamp", default: null })
   lastSeen!: Date;

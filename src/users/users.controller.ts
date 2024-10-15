@@ -8,6 +8,7 @@ export const getAllUsers = catchAsync(
 
     res.status(200).json({
       status: "success",
+      total: users.length,
       data: {
         users,
       },
