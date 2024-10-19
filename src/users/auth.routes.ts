@@ -11,7 +11,7 @@ import {
   updatePassword,
 } from "./auth.controller";
 import { getAllUsers } from "./users.controller";
-import protect from "../middlewares/authenticate";
+import { protect } from "../middlewares/authenticate";
 import rateLimit from "express-rate-limit";
 
 const limiter = rateLimit({

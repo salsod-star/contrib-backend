@@ -1,7 +1,7 @@
 import { Response } from "express";
 import generateToken from "./generateToken";
 
-function createAndSendToken(id: string, res: Response) {
+function createAndSendToken(cookieKey: string, id: string, res: Response) {
   const token = generateToken({ id });
 
   let isProd: boolean = false;
@@ -12,7 +12,7 @@ function createAndSendToken(id: string, res: Response) {
     isProd = true;
   }
 
-  res.cookie("jwt", token, {
+  res.cookie(cookieKey, token, {
     expires: new Date(
       Date.now() +
         Number(process.env.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000

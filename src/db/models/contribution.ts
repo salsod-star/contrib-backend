@@ -1,4 +1,5 @@
 import {
+  AfterUpdate,
   BeforeUpdate,
   Column,
   CreateDateColumn,
@@ -51,6 +52,19 @@ export class Contribution {
   @BeforeUpdate()
   incrementUpdateCount() {
     this.updateCount = this.updateCount + 1;
+  }
+
+  @BeforeUpdate()
+  getContributionStatus() {
+    let amount = this.expectedAmount - this.amount;
+
+    if (amount === 0) {
+      this.status = ContributionStatus.COMPLETE;
+    } else if (amount > 0 && amount < this.expectedAmount) {
+      this.status = ContributionStatus.PENDING;
+    } else if (amount === this.expectedAmount) {
+      this.status = ContributionStatus.NOT_PAID;
+    }
   }
 }
 

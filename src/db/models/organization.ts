@@ -6,8 +6,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "./user";
 import { OrganizationSetting } from "./organizationSettings";
+import { Membership } from "./membership";
 
 @Entity()
 export class Organization {
@@ -18,12 +18,15 @@ export class Organization {
   name!: string;
 
   @Column()
-  isDefault!: boolean;
+  adminId!: string;
+
+  @Column({ nullable: true })
+  memberCount!: number;
 
   @OneToOne(() => OrganizationSetting, (settings) => settings.organization)
   @JoinColumn()
   settings!: OrganizationSetting;
 
-  @OneToMany(() => User, (user) => user.organization)
-  users!: User[];
+  @OneToMany(() => Membership, (userMembership) => userMembership.organization)
+  members!: Membership[];
 }

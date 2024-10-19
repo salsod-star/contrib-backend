@@ -14,12 +14,12 @@ import { UserResponseDto } from "../dtos/userResponse.dto";
 import AppError from "../errors/AppError";
 import isPasswordMatch from "../utils/decryptPassword";
 import { generatePasswordResetToken } from "../utils/generatePasswordResetToken";
-import { sendMail } from "../utils/sendEmail";
 import { MoreThan } from "typeorm";
 import generateHashedPassword from "../utils/encryptPassword";
 import { filterBody } from "../utils/filterUserFields";
 import createAndSendToken from "../utils/createAndSendToken";
 import jwt from "jsonwebtoken";
+import { Email } from "../utils/sendEmail";
 
 export const createUser = catchAsync(
   async (
@@ -47,6 +47,8 @@ export const createUser = catchAsync(
       email: user.email,
       isActive: user.isActive,
     };
+
+    await new Email(user, `${process.env.ORIGIN!}/login`).sendWelcome();
 
     res.status(200).json({
       status: "success",
@@ -81,7 +83,7 @@ export const login = catchAsync(
       );
     }
 
-    createAndSendToken(user.id, res);
+    createAndSendToken("userJWT", user.id, res);
   }
 );
 
@@ -122,7 +124,7 @@ export const isLoggedIn = catchAsync(
       });
     }
 
-    res.status(400).json({
+    res.status(401).json({
       status: "fail",
       message: "Credentials not found",
     });
@@ -152,19 +154,10 @@ export const forgotPassword = catchAsync(
 
     await UserManager.save(user);
 
-    const resetUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/resetPassword/${token}`;
-
-    const message = `Forgot your password? Click the link below to make a new one.\n\n${resetUrl}\n\nDo note that the link will expire in the next 10 minutes. If you didn't initiate this request. kindly ignore this mail.`;
+    const resetUrl = `${process.env.ORIGIN}/resetPassword/${token}`;
 
     try {
-      await sendMail({
-        from: "contrib",
-        subject: "Password reset",
-        to: "salsodiou@gmail.com",
-        text: message,
-      });
+      await new Email(user, resetUrl).sendPasswordReset();
 
       res.status(200).json({
         status: "success",
@@ -226,7 +219,7 @@ export const resetPassword = catchAsync(
 
     await UserManager.save(user);
 
-    createAndSendToken(user.id, res);
+    createAndSendToken("userJWT", user.id, res);
   }
 );
 
@@ -271,7 +264,7 @@ export const updatePassword = catchAsync(
 
     await UserManager.save(user);
 
-    createAndSendToken(user.id, res);
+    createAndSendToken("userJWT", user.id, res);
   }
 );
 
